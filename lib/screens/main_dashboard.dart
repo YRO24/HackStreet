@@ -6,6 +6,7 @@ import '../models/gamification_models.dart';
 import 'chat_screen.dart';
 import 'add_transaction_screen.dart';
 import 'transaction_history_screen.dart';
+import '../presentation/screens/profile_screen.dart';
 
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
@@ -159,14 +160,13 @@ class _MainDashboardState extends State<MainDashboard> {
 
   Widget _buildFloatingActionButton() {
     return Container(
-      height: 56,
-      margin: const EdgeInsets.only(top: 8),
+      height: 64,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           // Add Income FAB
-          Container(
+          SizedBox(
             width: 56,
             height: 56,
             child: FloatingActionButton(
@@ -178,38 +178,31 @@ class _MainDashboardState extends State<MainDashboard> {
             ),
           ),
           
-          const SizedBox(width: 12),
-          
           // Transaction History FAB (center, larger)
-          Container(
-            height: 56,
-            child: FloatingActionButton.extended(
-              heroTag: "history",
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TransactionHistoryScreen(transactions: _transactions),
-                  ),
-                );
-              },
-              backgroundColor: AppColors.primary,
-              elevation: 6,
-              label: const Text(
-                'History', 
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+          FloatingActionButton.extended(
+            heroTag: "history",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransactionHistoryScreen(transactions: _transactions),
                 ),
+              );
+            },
+            backgroundColor: AppColors.primary,
+            elevation: 6,
+            label: const Text(
+              'History', 
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-              icon: const Icon(Icons.history, color: Colors.white, size: 20),
             ),
+            icon: const Icon(Icons.history, color: Colors.white, size: 20),
           ),
           
-          const SizedBox(width: 12),
-          
           // Add Expense FAB
-          Container(
+          SizedBox(
             width: 56,
             height: 56,
             child: FloatingActionButton(
@@ -656,25 +649,47 @@ class _MainDashboardState extends State<MainDashboard> {
                     
                     const SizedBox(width: 16),
                     
-                    // Chat button
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.chat, color: Colors.white),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatScreen(
-                                dashboardData: _dashboardData[_selectedIndex],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    // Profile and Chat buttons
+                    Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.person, color: Colors.white),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ProfileScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.chat, color: Colors.white),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatScreen(
+                                    dashboardData: _dashboardData[_selectedIndex],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
