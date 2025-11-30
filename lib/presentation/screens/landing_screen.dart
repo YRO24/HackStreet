@@ -45,7 +45,7 @@ class LandingScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     
                     Text(
-                      'FinanceApp',
+                      'GENFI',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 32,

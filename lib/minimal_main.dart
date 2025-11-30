@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FinanceApp - Modern Financial Assistant',
+      title: 'GENFI - Modern Financial Assistant',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const LandingScreen(),
@@ -63,7 +63,7 @@ class LandingScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       
                       const Text(
-                        'FinanceApp',
+                        'GENFI',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 32,

@@ -153,68 +153,56 @@ class _MainDashboardState extends State<MainDashboard> {
         child: _buildDashboardContent(_dashboardData[_selectedIndex]),
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
-      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButton: _selectedIndex == 0 ? _buildFloatingActionButton() : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   Widget _buildFloatingActionButton() {
-    return Container(
-      height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // Add Income FAB
-          SizedBox(
-            width: 56,
-            height: 56,
-            child: FloatingActionButton(
-              heroTag: "income",
-              onPressed: () => _showAddTransactionScreen(TransactionType.income),
-              backgroundColor: AppColors.success,
-              elevation: 4,
-              child: const Icon(Icons.add, color: Colors.white, size: 24),
-            ),
-          ),
-          
-          // Transaction History FAB (center, larger)
-          FloatingActionButton.extended(
-            heroTag: "history",
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TransactionHistoryScreen(transactions: _transactions),
-                ),
-              );
-            },
-            backgroundColor: AppColors.primary,
-            elevation: 6,
-            label: const Text(
-              'History', 
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Transaction History FAB (top)
+        FloatingActionButton.extended(
+          heroTag: "history",
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TransactionHistoryScreen(transactions: _transactions),
               ),
-            ),
-            icon: const Icon(Icons.history, color: Colors.white, size: 20),
-          ),
-          
-          // Add Expense FAB
-          SizedBox(
-            width: 56,
-            height: 56,
-            child: FloatingActionButton(
-              heroTag: "expense",
-              onPressed: () => _showAddTransactionScreen(TransactionType.expense),
-              backgroundColor: AppColors.error,
-              elevation: 4,
-              child: const Icon(Icons.remove, color: Colors.white, size: 24),
+            );
+          },
+          backgroundColor: AppColors.primary,
+          elevation: 4,
+          extendedPadding: const EdgeInsets.symmetric(horizontal: 12),
+          label: const Text(
+            'History', 
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
             ),
           ),
-        ],
-      ),
+          icon: const Icon(Icons.history, color: Colors.white, size: 18),
+        ),
+        
+        const SizedBox(height: 12),
+        
+        // Add Transaction FAB (bottom)
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: FloatingActionButton(
+            heroTag: "addTransaction",
+            onPressed: () => _showAddTransactionScreen(TransactionType.income),
+            backgroundColor: AppColors.success,
+            elevation: 3,
+            mini: true,
+            child: const Icon(Icons.add, color: Colors.white, size: 20),
+          ),
+        ),
+      ],
     );
   }
 

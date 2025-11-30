@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FinanceApp - Modern Financial Assistant',
+      title: 'GENFI - Modern Financial Assistant',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: _buildCurrentScreen(),
@@ -91,7 +91,7 @@ class LandingScreenWrapper extends StatelessWidget {
                     const SizedBox(height: 24),
                     
                     const Text(
-                      'FinanceApp',
+                      'GENFI',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 32,

@@ -1,4 +1,10 @@
 fastapi
-uvicorn
+uvicorn[standard]
 pydantic
+numpy
+pandas
+scikit-learn
+joblib
 requests
+google-generativeai
+google-generativeai

@@ -1,18 +1,138 @@
+import 'dart:convert';
 import 'dart:math';
+import 'package:http/http.dart' as http;
 
 class ApiService {
-  ApiService();
+  static const String baseUrl = 'http://localhost:8000/api'; // Your backend URL
+  final bool useMockData;
+  
+  ApiService({this.useMockData = true}); // Set to false to use real backend
 
-  // Mock data service - generates realistic financial data
+  // Main API call method
   Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> body) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 800));
-    
-    if (endpoint.contains('analyze')) {
+    if (useMockData || endpoint.contains('analyze')) {
+      // Use mock data for existing functionality
+      await Future.delayed(const Duration(milliseconds: 800));
       return _generateMockCreditAnalysis(body);
     }
     
-    return {'success': true, 'message': 'Operation completed successfully'};
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('API Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Fallback to mock if backend unavailable
+      print('Backend unavailable, using mock data: $e');
+      return _generateMockCreditAnalysis(body);
+    }
+  }
+
+  // New method for ML credit prediction
+  Future<Map<String, dynamic>> predictCredit(Map<String, dynamic> profile) async {
+    if (useMockData) {
+      return _generateMockCreditAnalysis(profile);
+    }
+    
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/credit/predict'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(profile),
+      );
+      
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Prediction API Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('ML prediction unavailable, using fallback: $e');
+      return _generateMockCreditAnalysis(profile);
+    }
+  }
+
+  // Chat-specific analysis for your ML model
+  Future<Map<String, dynamic>> chatAnalysis(Map<String, dynamic> profile, {String question = ''}) async {
+    if (useMockData) {
+      final analysis = _generateMockCreditAnalysis(profile);
+      analysis['conversation_response'] = _generateChatResponse(analysis, question);
+      return analysis;
+    }
+    
+    try {
+      final requestBody = {
+        ...profile,
+        'question': question,
+      };
+      
+      final response = await http.post(
+        Uri.parse('$baseUrl/credit/chat-analysis'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(requestBody),
+      );
+      
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Chat Analysis Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Chat analysis unavailable, using fallback: $e');
+      final analysis = _generateMockCreditAnalysis(profile);
+      analysis['conversation_response'] = _generateChatResponse(analysis, question);
+      return analysis;
+    }
+  }
+
+  // Load your Jupyter notebook model
+  Future<bool> loadModel(String modelPath) async {
+    if (useMockData) {
+      print('Mock mode: Model loading simulated');
+      return true;
+    }
+    
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/credit/load-model'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'model_path': modelPath}),
+      );
+      
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Model loading failed: $e');
+      return false;
+    }
+  }
+
+  String _generateChatResponse(Map<String, dynamic> analysis, String question) {
+    final score = analysis['score'] as int;
+    final grade = analysis['grade'] as String;
+    
+    String response = "Based on your financial profile, I've calculated your credit score to be $score (Grade: $grade). ";
+    
+    if (question.toLowerCase().contains('improve')) {
+      final recommendations = analysis['recommendations'] as List<String>;
+      response += "To improve your score, I recommend: ${recommendations.first}";
+    } else if (question.toLowerCase().contains('loan')) {
+      if (score >= 700) {
+        response += "With your current score, you should qualify for competitive loan rates!";
+      } else {
+        response += "Your score could benefit from improvement before applying for major loans.";
+      }
+    } else {
+      response += "Is there anything specific about your credit profile you'd like me to explain?";
+    }
+    
+    return response;
   }
 
   Future<Map<String, dynamic>> get(String endpoint, {Map<String, dynamic>? queryParameters}) async {

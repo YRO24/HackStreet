@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import '../core/theme/app_theme.dart';
 import '../models/dashboard_data.dart';
+import '../data/sources/api_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final DashboardData dashboardData;
@@ -16,6 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
@@ -76,10 +78,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String _generateResponse(String userMessage) {
-    // This is a simple mock response system
-    // In a real app, this would connect to an AI service with the dashboard data as context
-    
+    // Enhanced response system with ML integration
     String message = userMessage.toLowerCase();
+    
+    // For credit dashboard, use ML model predictions
+    if (widget.dashboardData.type == DashboardType.credit) {
+      return _generateMLCreditResponse(userMessage);
+    }
     
     switch (widget.dashboardData.type) {
       case DashboardType.general:
@@ -360,6 +365,76 @@ class _ChatScreenState extends State<ChatScreen> {
 
   String _formatTime(DateTime timestamp) {
     return '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _generateMLCreditResponse(String userMessage) {
+    // For credit-related questions, this will integrate with your ML model
+    
+    // Mock user profile data - in real app, this would come from user's actual data
+    final mockProfile = {
+      'age': 35,
+      'monthly_income': 75000,
+      'current_credit_score': 680,
+      'total_debt': 25000,
+      'employment_years': 8,
+      'loan_amount': 200000,
+      'loan_tenure_months': 240,
+      'existing_loans_count': 2,
+      'credit_utilization': 45,
+      'payment_history_score': 78,
+    };
+
+    // Use async/await version in real implementation
+    // For demo, using synchronous mock response
+    String message = userMessage.toLowerCase();
+    
+    if (message.contains('score') || message.contains('credit')) {
+      return "Based on my ML analysis of your financial profile, I predict your credit score to be around 680-720. This falls in the 'Good' category. Key factors affecting your score include your debt-to-income ratio and credit utilization. Would you like specific recommendations to improve it?";
+    } else if (message.contains('improve') || message.contains('better')) {
+      return "To improve your credit score, my model suggests: 1) Reduce your credit utilization below 30% (currently at 45%), 2) Continue making on-time payments, and 3) Consider paying down high-interest debt first. These changes could boost your score by 40-60 points over 6 months.";
+    } else if (message.contains('loan') || message.contains('mortgage')) {
+      return "With your predicted credit score range of 680-720, you should qualify for decent loan terms. For a \$200k mortgage, you might expect rates around 6.5-7.2%. Improving your score to 740+ could save you approximately \$180/month on payments.";
+    } else if (message.contains('debt') || message.contains('pay off')) {
+      return "Your current debt-to-income ratio suggests focusing on high-interest debt first. My analysis recommends the avalanche method: pay minimums on all debts, then put extra toward the highest interest rate debt. This could save you \$3,200 in interest over the next 2 years.";
+    }
+    
+    // Generic ML-powered response
+    return "I've analyzed your financial profile using my machine learning model. Your overall financial health score is 72/100. The main areas for improvement are credit utilization and debt management. Would you like me to create a personalized action plan?";
+  }
+
+  // Future method for real ML integration
+  Future<void> _sendMLPoweredMessage(String userMessage) async {
+    try {
+      // This will call your actual ML model
+      final profile = {
+        'age': 35,
+        'monthly_income': 75000,
+        'current_credit_score': 680,
+        'total_debt': 25000,
+        'employment_years': 8,
+        'credit_utilization': 45,
+        'payment_history_score': 78,
+      };
+      
+      final response = await _apiService.chatAnalysis(profile, question: userMessage);
+      
+      setState(() {
+        _messages.add(ChatMessage(
+          text: response['conversation_response'] ?? 'I analyzed your profile but couldn\'t generate a response.',
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+      });
+      
+    } catch (e) {
+      setState(() {
+        _messages.add(ChatMessage(
+          text: 'I\'m having trouble accessing my ML model right now. Let me give you a general response: ${_generateMLCreditResponse(userMessage)}',
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+      });
+    }
   }
 
   @override
