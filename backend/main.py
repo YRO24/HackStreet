@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from config import config
 from routers import credit_agent, planner_agent, explain_agent, insurance_agent
+
+# Validate configuration on startup
+config.validate()
 
 app = FastAPI(title="GenFi Credit & Insurance Agent API")
 
@@ -24,4 +28,4 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=config.API_HOST, port=config.API_PORT)

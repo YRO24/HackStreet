@@ -7,4 +7,5 @@ scikit-learn
 joblib
 requests
 google-generativeai
+python-dotenv
 google-generativeai

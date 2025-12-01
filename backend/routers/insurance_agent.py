@@ -9,9 +9,9 @@ router = APIRouter(prefix="/api/insurance", tags=["Insurance Agent"])
 # ---------------------------------------------------
 
 import google.generativeai as genai
+from config import config
 
-GEMINI_API_KEY = "AIzaSyBLRan3LNd2mSRLCDEPW_Gmac0YX4UrH2M"
-genai.configure(api_key=GEMINI_API_KEY)
+genai.configure(api_key=config.GEMINI_API_KEY)
 
 try:
     # Try the most available model first
